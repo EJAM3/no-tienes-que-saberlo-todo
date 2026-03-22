@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Libreta de Predicación</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #faf8f3;
+  --surface: #ffffff;
+  --surface2: #f3ede0;
+  --border: #ddd5c0;
+  --text: #1a1410;
+  --text2: #5a4e3a;
+  --accent: #7c3a1e;
+  --accent2: #b5651d;
+  --gold: #c8962a;
+  --blue-ref: #2c4a7c;
+  --cross-ref: #8b3a1a;
+  --section-num: #1a1410;
+  --shadow: 0 2px 20px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+  --radius: 10px;
+  --font-body: 'Lora', Georgia, serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --transition: all 0.25s ease;
+}
+[data-theme="dark"] {
+  --bg: #12100e;
+  --surface: #1e1a16;
+  --surface2: #2a2420;
+  --border: #3a3028;
+  --text: #e8dfc8;
+  --text2: #a89880;
+  --accent: #e07040;
+  --accent2: #d4884e;
+  --gold: #d4a840;
+  --blue-ref: #6a9ad4;
+  --cross-ref: #e08060;
+  --section-num: #e8dfc8;
+  --shadow: 0 2px 20px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: var(--transition);
+  line-height: 1.7;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 0 1.5rem;
+  display: flex; align-items: center; gap: 1rem;
+  height: 56px;
+}
+.topbar-title {
+  font-family: var(--font-display);
+  font-size: 1rem; font-weight: 600;
+  color: var(--accent); letter-spacing: .02em;
+  flex: 1;
+}
+.topbar-actions { display: flex; align-items: center; gap: .5rem; }
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  border-bottom: 2px solid var(--border);
+  background: var(--surface);
+  padding: 0 1.5rem;
+}
+.tab-btn {
+  font-family: var(--font-display);
+  font-size: .85rem; font-weight: 600;
+  padding: .75rem 1.4rem;
+  border: none; background: none;
+  color: var(--text2); cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: var(--transition);
+  letter-spacing: .04em; text-transform: uppercase;
+}
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.tab-btn:hover { color: var(--accent); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── TOOLBAR ── */
+.toolbar {
+  position: sticky; top: 56px; z-index: 90;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: .5rem 1.5rem;
+  display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
+}
+.tool-group {
+  display: flex; align-items: center; gap: .3rem;
+  padding-right: .7rem;
+  border-right: 1px solid var(--border);
+}
+.tool-group:last-child { border-right: none; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .35rem;
+  padding: .4rem .8rem; border-radius: 6px; border: 1px solid var(--border);
+  font-family: var(--font-body); font-size: .8rem; cursor: pointer;
+  background: var(--surface); color: var(--text);
+  transition: var(--transition); white-space: nowrap;
+}
+.btn:hover { background: var(--surface2); border-color: var(--accent); color: var(--accent); }
+.btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-icon {
+  width: 34px; height: 34px; padding: 0;
+  border-radius: 50%; font-size: 1rem;
+}
+.btn-play {
+  width: 42px; height: 42px; border-radius: 50%;
+  font-size: 1.1rem; background: var(--accent); color: #fff;
+  border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.btn-play:hover { background: var(--accent2); transform: scale(1.05); }
+.btn-save {
+  background: var(--gold); color: #fff; border-color: var(--gold); font-weight: 600;
+}
+.btn-save:hover { opacity: .9; color: #fff; }
+
+/* Color picker wrapper */
+.color-picker-wrap { position: relative; display: inline-flex; align-items: center; }
+.color-swatch {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid var(--border); cursor: pointer;
+  display: inline-block; background: var(--text);
+}
+.color-palette {
+  display: none; position: absolute; top: 36px; left: 0; z-index: 200;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: .5rem; box-shadow: var(--shadow-lg);
+  display: none; gap: .35rem; flex-wrap: wrap; width: 180px;
+}
+.color-palette.open { display: flex; }
+.color-dot {
+  width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; transition: transform .15s;
+}
+.color-dot:hover { transform: scale(1.2); border-color: var(--text); }
+
+/* ── CHRONOMETER ── */
+.chrono {
+  font-family: var(--font-mono); font-size: 1rem; font-weight: 500;
+  color: var(--accent); letter-spacing: .06em; min-width: 70px;
+}
+.chrono-wrap { display: flex; align-items: center; gap: .4rem; }
+
+/* ── SERMON CONTENT ── */
+.sermon-wrap {
+  max-width: 780px; margin: 0 auto;
+  padding: 2.5rem 2rem 4rem;
+}
+
+.buena-noticia {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  color: #fff; border-radius: var(--radius);
+  padding: 1.6rem 2rem; margin-bottom: 2.5rem;
+  box-shadow: var(--shadow-lg);
+  position: relative; overflow: hidden;
+}
+.buena-noticia::before {
+  content: '✦';
+  position: absolute; right: 1.5rem; top: 1rem;
+  font-size: 4rem; opacity: .12;
+}
+.buena-noticia-label {
+  font-family: var(--font-display); font-size: .72rem;
+  letter-spacing: .2em; text-transform: uppercase;
+  opacity: .8; margin-bottom: .4rem;
+}
+.buena-noticia-verse {
+  font-family: var(--font-display); font-size: 1.1rem;
+  font-style: italic; line-height: 1.6; margin-bottom: .6rem;
+}
+.buena-noticia-ref {
+  font-size: .8rem; opacity: .75; font-weight: 500; letter-spacing: .05em;
+}
+
+.sermon-title {
+  font-family: var(--font-display);
+  font-size: 2rem; font-weight: 700; line-height: 1.2;
+  color: var(--accent); margin-bottom: .3rem; text-align: center;
+}
+.sermon-text-ref {
+  text-align: center; font-size: .9rem; color: var(--text2);
+  margin-bottom: .5rem; font-style: italic;
+}
+.main-verse-block {
+  border-left: 4px solid var(--blue-ref);
+  padding: .8rem 1.2rem; margin: 1.2rem 0;
+  background: var(--surface2); border-radius: 0 var(--radius) var(--radius) 0;
+  font-style: italic; color: var(--blue-ref); font-size: .97rem;
+}
+
+.divider {
+  border: none; border-top: 1px solid var(--border);
+  margin: 1.8rem 0;
+}
+
+.intro-label {
+  font-weight: 700; font-size: .9rem; color: var(--text); margin-bottom: .4rem;
+}
+.intro-text {
+  font-size: .97rem; line-height: 1.75; margin-bottom: .5rem;
+  color: var(--text);
+  outline: none;
+}
+.intro-text:focus {
+  background: var(--surface2); border-radius: 4px;
+  box-shadow: 0 0 0 2px var(--gold);
+}
+
+.section-header {
+  font-family: var(--font-display); font-size: 1.2rem;
+  font-weight: 700; color: var(--section-num);
+  margin: 2rem 0 .6rem; border-bottom: 2px solid var(--border);
+  padding-bottom: .4rem; outline: none;
+}
+.section-header:focus { box-shadow: 0 0 0 2px var(--gold); border-radius: 4px; }
+
+.scripture {
+  display: flex; gap: .5rem; align-items: flex-start;
+  padding: .5rem .8rem; margin: .5rem 0;
+  background: var(--surface2); border-radius: 6px;
+  font-size: .9rem;
+}
+.scripture-ref-badge {
+  font-weight: 700; color: var(--blue-ref); white-space: nowrap;
+  font-family: var(--font-mono); font-size: .8rem;
+  background: rgba(44,74,124,.1); padding: .15rem .4rem;
+  border-radius: 4px; margin-top: .05rem;
+}
+.scripture-quote { font-style: italic; color: var(--text2); outline: none; }
+.scripture-quote:focus { box-shadow: 0 0 0 2px var(--gold); border-radius: 4px; }
+
+.cross-ref-block {
+  display: flex; gap: .5rem; align-items: flex-start;
+  border-left: 3px solid var(--cross-ref);
+  padding: .45rem .9rem; margin: .4rem 0 .4rem 1rem;
+  font-size: .88rem;
+}
+.cross-ref-badge {
+  font-weight: 700; color: var(--cross-ref); white-space: nowrap;
+  font-family: var(--font-mono); font-size: .78rem;
+  background: rgba(139,58,26,.1); padding: .1rem .35rem;
+  border-radius: 4px; margin-top: .1rem;
+}
+.cross-ref-arrow { color: var(--cross-ref); font-size: .85rem; margin-top: .1rem; }
+.cross-ref-text { font-style: italic; color: var(--text2); outline: none; }
+.cross-ref-text:focus { box-shadow: 0 0 0 2px var(--gold); border-radius: 4px; }
+
+.bullet-item {
+  display: flex; gap: .6rem; align-items: flex-start;
+  padding: .25rem 0; margin-left: .5rem;
+}
+.bullet-dot { color: var(--accent); margin-top: .15rem; flex-shrink: 0; }
+.bullet-text { font-size: .95rem; outline: none; }
+.bullet-text:focus { box-shadow: 0 0 0 2px var(--gold); border-radius: 4px; padding: 0 4px; }
+
+.conclusion-block {
+  text-align: center; padding: 1.5rem;
+  background: var(--surface2); border-radius: var(--radius);
+  margin-top: 1.5rem;
+  border: 1px solid var(--border);
+}
+.conclusion-label {
+  font-family: var(--font-display); font-size: .75rem;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--text2); margin-bottom: .8rem;
+}
+.conclusion-line {
+  font-style: italic; font-size: .97rem;
+  color: var(--text); margin-bottom: .5rem; outline: none;
+}
+.conclusion-line:focus { box-shadow: 0 0 0 2px var(--gold); border-radius: 4px; }
+.conclusion-final {
+  font-family: var(--font-display); font-size: 1.15rem;
+  font-weight: 700; color: var(--accent); margin-top: .5rem; outline: none;
+}
+.conclusion-final:focus { box-shadow: 0 0 0 2px var(--gold); border-radius: 4px; }
+
+/* TTS highlight */
+.tts-active { background: rgba(200, 150, 42, 0.18); border-radius: 4px; }
+
+/* ── PRESENTATION TAB ── */
+.slides-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 2rem 1rem;
+}
+.slide-nav {
+  display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;
+}
+.slide-counter {
+  font-family: var(--font-mono); font-size: .85rem; color: var(--text2);
+  min-width: 70px; text-align: center;
+}
+.slide {
+  width: 100%; max-width: 820px;
+  aspect-ratio: 16/9;
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 3rem 4rem;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.slide::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+}
+.slide-type-buena .slide-bg { background: linear-gradient(135deg, var(--accent), var(--accent2)); }
+
+.slide-label {
+  font-family: var(--font-display); font-size: .65rem;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: var(--text2); margin-bottom: .8rem;
+}
+.slide-main-title {
+  font-family: var(--font-display); font-size: 2.2rem;
+  font-weight: 700; color: var(--accent);
+  line-height: 1.2; margin-bottom: .5rem;
+}
+.slide-subtitle {
+  font-family: var(--font-display); font-size: 1.3rem;
+  font-weight: 600; color: var(--text);
+  line-height: 1.35; margin-bottom: .5rem;
+}
+.slide-verse-text {
+  font-style: italic; font-size: .95rem;
+  color: var(--text2); line-height: 1.6; margin-bottom: .6rem;
+}
+.slide-ref {
+  font-family: var(--font-mono); font-size: .8rem;
+  color: var(--accent); font-weight: 600; letter-spacing: .04em;
+}
+.slide-section-num {
+  font-family: var(--font-display); font-size: 1rem;
+  color: var(--text2); margin-bottom: .3rem;
+}
+.slide-accent-line {
+  width: 60px; height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  border-radius: 2px; margin: .8rem auto;
+}
+.slide-pager {
+  display: flex; gap: .4rem; margin-top: 1.2rem;
+}
+.slide-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border); cursor: pointer; transition: var(--transition);
+}
+.slide-dot.active { background: var(--accent); }
+
+/* BUENA NOTICIA slide override */
+.slide.bn-slide {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  color: #fff;
+}
+.slide.bn-slide .slide-label,
+.slide.bn-slide .slide-verse-text,
+.slide.bn-slide .slide-ref { color: rgba(255,255,255,.8); }
+.slide.bn-slide .slide-main-title { color: #fff; }
+
+/* Theme toggle */
+.theme-toggle {
+  font-size: 1.1rem;
+  background: none; border: 1px solid var(--border);
+  border-radius: 50%; width: 34px; height: 34px;
+  cursor: pointer; color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+}
+.theme-toggle:hover { background: var(--surface2); }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .sermon-wrap { padding: 1.5rem 1rem 3rem; }
+  .slide { padding: 1.5rem; }
+  .slide-main-title { font-size: 1.5rem; }
+}
+</style>
+</head>
+<body data-theme="light">
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-title">✦ Libreta de Predicación</div>
+  <div class="topbar-actions">
+    <div class="chrono-wrap">
+      <button class="btn btn-icon" id="chronoToggle" title="Iniciar/Pausar">▶</button>
+      <button class="btn btn-icon" id="chronoReset" title="Reiniciar" style="font-size:.8rem">↺</button>
+      <span class="chrono" id="chronoDisplay">00:00</span>
+    </div>
+    <button class="theme-toggle" id="themeToggle" title="Claro/Oscuro">🌙</button>
+    <button class="btn btn-save" id="saveBtn">💾 Guardar HTML</button>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" data-tab="libreta">📖 Libreta</button>
+  <button class="tab-btn" data-tab="presentacion">🖥 Presentación</button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TAB: LIBRETA
+══════════════════════════════════════════ -->
+<div class="tab-panel active" id="tab-libreta">
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="tool-group">
+      <button class="btn btn-play" id="ttsPlay" title="Leer en voz alta">▶</button>
+      <button class="btn btn-icon" id="ttsRewind" title="Retroceder párrafo">⏮</button>
+      <button class="btn btn-icon" id="ttsStop" title="Detener">⏹</button>
+      <select class="btn" id="ttsSpeed" title="Velocidad">
+        <option value="0.7">Lento</option>
+        <option value="1" selected>Normal</option>
+        <option value="1.3">Rápido</option>
+      </select>
+    </div>
+    <div class="tool-group">
+      <span style="font-size:.78rem;color:var(--text2);">Color texto:</span>
+      <div class="color-picker-wrap">
+        <span class="color-swatch" id="colorSwatch"></span>
+        <div class="color-palette" id="colorPalette">
+          <div class="color-dot" data-color="#1a1410" style="background:#1a1410" title="Carbón"></div>
+          <div class="color-dot" data-color="#7c3a1e" style="background:#7c3a1e" title="Borgoña"></div>
+          <div class="color-dot" data-color="#2c4a7c" style="background:#2c4a7c" title="Azul noche"></div>
+          <div class="color-dot" data-color="#2d5a27" style="background:#2d5a27" title="Verde bosque"></div>
+          <div class="color-dot" data-color="#4a2060" style="background:#4a2060" title="Púrpura"></div>
+          <div class="color-dot" data-color="#8b4513" style="background:#8b4513" title="Canela"></div>
+          <div class="color-dot" data-color="#c8962a" style="background:#c8962a" title="Oro"></div>
+          <div class="color-dot" data-color="#e8dfc8" style="background:#e8dfc8" title="Marfil"></div>
+          <div class="color-dot" data-color="#ffffff" style="background:#fff;border:1px solid #ccc" title="Blanco"></div>
+        </div>
+      </div>
+    </div>
+    <div class="tool-group">
+      <button class="btn" id="editModeBtn">✏️ Editar</button>
+    </div>
+  </div>
+
+  <!-- SERMON CONTENT -->
+  <div class="sermon-wrap" id="sermonContent">
+
+    <!-- BUENA NOTICIA -->
+    <div class="buena-noticia">
+      <div class="buena-noticia-label">✦ Buena Noticia</div>
+      <div class="buena-noticia-verse tts-node" contenteditable="false">
+        "Y después de que ustedes hayan sufrido un poco de tiempo, Dios mismo, el Dios de toda gracia que los llamó a su gloria eterna en Cristo, los restaurará y los hará fuertes, firmes y estables."
+      </div>
+      <div class="buena-noticia-ref">— 1 Pedro 5:10 (NVI)</div>
+    </div>
+
+    <!-- TÍTULO -->
+    <div class="sermon-title tts-node" contenteditable="false">NO TIENES QUE SABERLO TODO</div>
+    <div class="sermon-text-ref">Texto: Proverbios 3:5-6 (NVI)</div>
+
+    <div class="main-verse-block tts-node" contenteditable="false">
+      "Confía en el Señor de todo corazón, y no en tu propia inteligencia. Reconócelo en todos tus caminos, y él allanará tus sendas."
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- INTRO -->
+    <div class="intro-label">Intro:</div>
+    <div class="intro-text tts-node" contenteditable="false">Hay momentos en la vida en que el camino se oscurece completamente...</div>
+    <div class="intro-text tts-node" contenteditable="false">Decisiones que pesan, encrucijadas sin respuesta, caminos que parecen no llevar a ningún lado.</div>
+    <div class="intro-text tts-node" contenteditable="false">Relaciones rotas, sueños frustrados, miedo al futuro, incertidumbre en el presente.</div>
+    <div class="intro-text tts-node" contenteditable="false">¿En quién confías cuando ya no tienes más respuestas propias?</div>
+    <div class="intro-text tts-node" contenteditable="false">Proverbios nos habla de confiar en el Señor. Pero, ¿quién es ese Señor? La historia no quedó en el Antiguo Testamento...</div>
+
+    <div class="cross-ref-block">
+      <span class="cross-ref-arrow">↳</span>
+      <span class="cross-ref-badge">Jn. 14:6</span>
+      <span class="cross-ref-text tts-node" contenteditable="false">"Yo soy el camino, la verdad y la vida. Nadie llega al Padre sino por mí."</span>
+    </div>
+    <div class="cross-ref-block">
+      <span class="cross-ref-arrow">↳</span>
+      <span class="cross-ref-badge">Col. 1:16-17</span>
+      <span class="cross-ref-text tts-node" contenteditable="false">"Todo fue creado por medio de él y para él... y en él todo tiene su razón de ser."</span>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- SECCIÓN I -->
+    <div class="section-header tts-node" contenteditable="false">I.- El problema de confiar solo en uno mismo. V. 5b</div>
+    <div class="scripture">
+      <span class="scripture-ref-badge">V.5b</span>
+      <span class="scripture-quote tts-node" contenteditable="false">"...y no en tu propia inteligencia."</span>
+    </div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">La inteligencia humana es valiosa, pero tiene un límite real.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">La historia de muchos errores comienza con una frase: "Yo sé lo que hago".</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">Relaciones destruidas, decisiones financieras desastrosas, adicciones iniciadas por exceso de confianza propia.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">No se trata de que la razón sea mala. Se trata de que sola, no alcanza para todo.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">El orgullo intelectual es una de las trampas más sutiles que existen.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">Jesús lo dijo de manera directa: sin él, los esfuerzos propios no producen fruto duradero.</span></div>
+    <div class="cross-ref-block">
+      <span class="cross-ref-arrow">↳</span><span class="cross-ref-badge">Jn. 15:5</span>
+      <span class="cross-ref-text tts-node" contenteditable="false">"...separados de mí no pueden ustedes hacer nada."</span>
+    </div>
+    <div class="cross-ref-block">
+      <span class="cross-ref-arrow">↳</span><span class="cross-ref-badge">1 Co. 1:25</span>
+      <span class="cross-ref-text tts-node" contenteditable="false">"La locura de Dios es más sabia que la sabiduría humana."</span>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- SECCIÓN II -->
+    <div class="section-header tts-node" contenteditable="false">II.- Confiar de todo corazón no es ceguera, es valentía. V. 5a</div>
+    <div class="scripture">
+      <span class="scripture-ref-badge">V.5a</span>
+      <span class="scripture-quote tts-node" contenteditable="false">"Confía en el Señor de todo corazón..."</span>
+    </div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">Confiar no es ignorar la realidad. Es pararse sobre una base más sólida que la realidad.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">El miedo nos paraliza. La confianza genuina nos moviliza hacia adelante.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">El ser humano fue diseñado para no cargar solo el peso de sus decisiones.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">La fe no elimina el problema. Cambia radicalmente la perspectiva desde donde lo enfrentas.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">Todo corazón: no a medias, no en los momentos convenientes. Una entrega total.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">Cristo mismo extendió esa invitación con sus propias palabras:</span></div>
+    <div class="cross-ref-block">
+      <span class="cross-ref-arrow">↳</span><span class="cross-ref-badge">Mt. 11:28-29</span>
+      <span class="cross-ref-text tts-node" contenteditable="false">"Vengan a mí todos ustedes que están cansados y agobiados, y yo les daré descanso."</span>
+    </div>
+    <div class="cross-ref-block">
+      <span class="cross-ref-arrow">↳</span><span class="cross-ref-badge">Jn. 10:11</span>
+      <span class="cross-ref-text tts-node" contenteditable="false">"Yo soy el buen pastor. El buen pastor da su vida por las ovejas."</span>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- SECCIÓN III -->
+    <div class="section-header tts-node" contenteditable="false">III.- Reconocerlo en "todos" los caminos, no solo en las crisis. V. 6a</div>
+    <div class="scripture">
+      <span class="scripture-ref-badge">V.6a</span>
+      <span class="scripture-quote tts-node" contenteditable="false">"Reconócelo en todos tus caminos..."</span>
+    </div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">Muchos solo buscan a Dios cuando ya no hay ninguna otra salida.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">Pero la confianza genuina no es de emergencia. Es de todos los días.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">Un atleta no entrena solo el día del partido. Prepara cada día para ese momento.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">Todos: en el trabajo, en el hogar, en las relaciones, en los sueños, en lo ordinario.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">Las pequeñas decisiones cotidianas revelan en quién realmente confías.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">Jesús no vino solo para las grandes crisis. Vino a habitar lo cotidiano:</span></div>
+    <div class="cross-ref-block">
+      <span class="cross-ref-arrow">↳</span><span class="cross-ref-badge">Lc. 19:10</span>
+      <span class="cross-ref-text tts-node" contenteditable="false">"El Hijo del Hombre vino a buscar y a salvar lo que se había perdido."</span>
+    </div>
+    <div class="cross-ref-block">
+      <span class="cross-ref-arrow">↳</span><span class="cross-ref-badge">Heb. 4:15</span>
+      <span class="cross-ref-text tts-node" contenteditable="false">"No tenemos un sumo sacerdote incapaz de compadecerse de nuestras debilidades."</span>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- SECCIÓN IV -->
+    <div class="section-header tts-node" contenteditable="false">IV.- La promesa que nadie puede fabricar por sí mismo. V. 6b</div>
+    <div class="scripture">
+      <span class="scripture-ref-badge">V.6b</span>
+      <span class="scripture-quote tts-node" contenteditable="false">"...y él allanará tus sendas."</span>
+    </div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">No dice que quitará las montañas. Dice que allanará el camino para que puedas transitarlo.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">Un camino difícil se vuelve transitable cuando no se camina solo.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">Esta promesa no es para un grupo selecto de personas religiosas.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">Es para todo aquel que reconoce honestamente que necesita una guía más grande que sí mismo.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">La historia está llena de vidas que encontraron dirección cuando la buscaron fuera de ellas mismas.</span></div>
+    <div class="bullet-item"><span class="bullet-dot">•</span><span class="bullet-text tts-node" contenteditable="false">En Cristo, esa promesa de Proverbios encontró su cumplimiento más pleno:</span></div>
+    <div class="cross-ref-block">
+      <span class="cross-ref-arrow">↳</span><span class="cross-ref-badge">Ro. 8:28</span>
+      <span class="cross-ref-text tts-node" contenteditable="false">"Dios dispone todas las cosas para el bien de quienes lo aman."</span>
+    </div>
+    <div class="cross-ref-block">
+      <span class="cross-ref-arrow">↳</span><span class="cross-ref-badge">Jn. 8:12</span>
+      <span class="cross-ref-text tts-node" contenteditable="false">"Yo soy la luz del mundo. El que me sigue no andará en tinieblas."</span>
+    </div>
+    <div class="cross-ref-block">
+      <span class="cross-ref-arrow">↳</span><span class="cross-ref-badge">Fil. 4:7</span>
+      <span class="cross-ref-text tts-node" contenteditable="false">"La paz de Dios, que sobrepasa todo entendimiento, cuidará sus corazones y sus pensamientos."</span>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- CONCLUSIÓN -->
+    <div class="conclusion-block">
+      <div class="conclusion-label">— Conclusión —</div>
+      <div class="conclusion-line tts-node" contenteditable="false">No se trata de saber más. Se trata de confiar mejor.</div>
+      <div class="conclusion-line tts-node" contenteditable="false">El camino no siempre es claro. Pero la guía sí puede serlo.</div>
+      <div class="conclusion-final tts-node" contenteditable="false">Ese Señor del que habla Proverbios tiene nombre: Jesús.</div>
+    </div>
+
+  </div><!-- /sermon-wrap -->
+</div><!-- /tab-libreta -->
+
+<!-- ══════════════════════════════════════════
+     TAB: PRESENTACIÓN
+══════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-presentacion">
+  <div class="slides-wrap">
+
+    <div class="slide-nav">
+      <button class="btn btn-icon" id="slidePrev">‹</button>
+      <span class="slide-counter" id="slideCounter">1 / 8</span>
+      <button class="btn btn-icon" id="slideNext">›</button>
+    </div>
+
+    <div id="slideContainer"></div>
+
+    <div class="slide-pager" id="slidePager"></div>
+
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════
+// DATA: slides
+// ══════════════════════════════
+const slides = [
+  {
+    type: 'buena-noticia',
+    label: '✦ Buena Noticia',
+    title: null,
+    subtitle: null,
+    verse: '"Y después de que ustedes hayan sufrido un poco de tiempo, Dios mismo, el Dios de toda gracia que los llamó a su gloria eterna en Cristo, los restaurará y los hará fuertes, firmes y estables."',
+    ref: '1 Pedro 5:10 (NVI)'
+  },
+  {
+    type: 'title',
+    label: 'Tema',
+    title: 'NO TIENES QUE SABERLO TODO',
+    subtitle: 'Proverbios 3:5-6 (NVI)',
+    verse: '"Confía en el Señor de todo corazón, y no en tu propia inteligencia. Reconócelo en todos tus caminos, y él allanará tus sendas."',
+    ref: 'Proverbios 3:5-6'
+  },
+  {
+    type: 'section',
+    label: 'I',
+    title: 'El problema de confiar solo en uno mismo',
+    subtitle: null,
+    verse: '"...y no en tu propia inteligencia."',
+    ref: 'Proverbios 3:5b',
+    crossRefs: [
+      { ref: 'Jn. 15:5', text: '"...separados de mí no pueden ustedes hacer nada."' },
+      { ref: '1 Co. 1:25', text: '"La locura de Dios es más sabia que la sabiduría humana."' }
+    ]
+  },
+  {
+    type: 'section',
+    label: 'II',
+    title: 'Confiar de todo corazón no es ceguera, es valentía',
+    subtitle: null,
+    verse: '"Confía en el Señor de todo corazón..."',
+    ref: 'Proverbios 3:5a',
+    crossRefs: [
+      { ref: 'Mt. 11:28-29', text: '"Vengan a mí todos ustedes que están cansados y agobiados, y yo les daré descanso."' },
+      { ref: 'Jn. 10:11', text: '"Yo soy el buen pastor. El buen pastor da su vida por las ovejas."' }
+    ]
+  },
+  {
+    type: 'section',
+    label: 'III',
+    title: 'Reconocerlo en todos los caminos, no solo en las crisis',
+    subtitle: null,
+    verse: '"Reconócelo en todos tus caminos..."',
+    ref: 'Proverbios 3:6a',
+    crossRefs: [
+      { ref: 'Lc. 19:10', text: '"El Hijo del Hombre vino a buscar y a salvar lo que se había perdido."' },
+      { ref: 'Heb. 4:15', text: '"No tenemos un sumo sacerdote incapaz de compadecerse de nuestras debilidades."' }
+    ]
+  },
+  {
+    type: 'section',
+    label: 'IV',
+    title: 'La promesa que nadie puede fabricar por sí mismo',
+    subtitle: null,
+    verse: '"...y él allanará tus sendas."',
+    ref: 'Proverbios 3:6b',
+    crossRefs: [
+      { ref: 'Ro. 8:28', text: '"Dios dispone todas las cosas para el bien de quienes lo aman."' },
+      { ref: 'Jn. 8:12', text: '"Yo soy la luz del mundo. El que me sigue no andará en tinieblas."' },
+      { ref: 'Fil. 4:7', text: '"La paz de Dios, que sobrepasa todo entendimiento, cuidará sus corazones y sus pensamientos."' }
+    ]
+  },
+  {
+    type: 'conclusion',
+    label: 'Conclusión',
+    title: 'No se trata de saber más. Se trata de confiar mejor.',
+    subtitle: 'El camino no siempre es claro. Pero la guía sí puede serlo.',
+    verse: null, ref: null
+  },
+  {
+    type: 'final',
+    label: '✦',
+    title: 'Ese Señor del que habla Proverbios tiene nombre:',
+    subtitle: 'JESÚS',
+    verse: null, ref: null
+  }
+];
+
+// ══════════════════════════════
+// RENDER SLIDES
+// ══════════════════════════════
+let currentSlide = 0;
+const slideContainer = document.getElementById('slideContainer');
+const slidePager = document.getElementById('slidePager');
+const slideCounter = document.getElementById('slideCounter');
+
+function renderSlide(idx) {
+  const s = slides[idx];
+  let inner = '';
+
+  if (s.type === 'buena-noticia') {
+    inner = `
+      <div class="slide-label">${s.label}</div>
+      <div class="slide-accent-line"></div>
+      <div class="slide-verse-text">${s.verse}</div>
+      <div class="slide-ref">${s.ref}</div>`;
+    slideContainer.innerHTML = `<div class="slide bn-slide">${inner}</div>`;
+  } else if (s.type === 'title') {
+    inner = `
+      <div class="slide-label">${s.label}</div>
+      <div class="slide-main-title">${s.title}</div>
+      <div class="slide-accent-line"></div>
+      <div class="slide-verse-text">${s.verse}</div>
+      <div class="slide-ref">${s.ref}</div>`;
+    slideContainer.innerHTML = `<div class="slide">${inner}</div>`;
+  } else if (s.type === 'section') {
+    const crefs = (s.crossRefs || []).map(c =>
+      `<div style="display:flex;gap:.4rem;align-items:flex-start;margin:.3rem 0;text-align:left">
+        <span style="font-family:var(--font-mono);font-size:.72rem;font-weight:700;color:var(--cross-ref);white-space:nowrap;padding:.1rem .3rem;background:rgba(139,58,26,.1);border-radius:3px">${c.ref}</span>
+        <span style="font-style:italic;color:var(--text2);font-size:.82rem">${c.text}</span>
+       </div>`
+    ).join('');
+    inner = `
+      <div class="slide-section-num">${s.label}</div>
+      <div class="slide-subtitle">${s.title}</div>
+      <div class="slide-accent-line"></div>
+      <div class="slide-verse-text">${s.verse} <span style="font-size:.75rem;font-weight:600;color:var(--accent);font-family:var(--font-mono)">${s.ref}</span></div>
+      <div style="width:100%;max-width:600px">${crefs}</div>`;
+    slideContainer.innerHTML = `<div class="slide" style="justify-content:center">${inner}</div>`;
+  } else if (s.type === 'conclusion') {
+    inner = `
+      <div class="slide-label">${s.label}</div>
+      <div class="slide-accent-line"></div>
+      <div class="slide-subtitle" style="font-style:italic">${s.title}</div>
+      <div class="slide-verse-text" style="margin-top:.8rem">${s.subtitle}</div>`;
+    slideContainer.innerHTML = `<div class="slide">${inner}</div>`;
+  } else if (s.type === 'final') {
+    inner = `
+      <div class="slide-label">${s.label}</div>
+      <div class="slide-subtitle" style="font-style:italic;font-size:1.1rem">${s.title}</div>
+      <div class="slide-main-title" style="font-size:3rem;letter-spacing:.08em">${s.subtitle}</div>`;
+    slideContainer.innerHTML = `<div class="slide">${inner}</div>`;
+  }
+
+  slideCounter.textContent = `${idx + 1} / ${slides.length}`;
+  document.querySelectorAll('.slide-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === idx);
+  });
+}
+
+function buildPager() {
+  slidePager.innerHTML = '';
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'slide-dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => { currentSlide = i; renderSlide(i); });
+    slidePager.appendChild(d);
+  });
+}
+
+document.getElementById('slidePrev').addEventListener('click', () => {
+  if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide); }
+});
+document.getElementById('slideNext').addEventListener('click', () => {
+  if (currentSlide < slides.length - 1) { currentSlide++; renderSlide(currentSlide); }
+});
+
+// Keyboard navigation for slides
+document.addEventListener('keydown', e => {
+  const isPresTab = document.getElementById('tab-presentacion').classList.contains('active');
+  if (!isPresTab) return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    if (currentSlide < slides.length - 1) { currentSlide++; renderSlide(currentSlide); }
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    if (currentSlide > 0) { currentSlide--; renderSlide(currentSlide); }
+  }
+});
+
+buildPager();
+renderSlide(0);
+
+// ══════════════════════════════
+// TABS
+// ══════════════════════════════
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ══════════════════════════════
+// THEME TOGGLE
+// ══════════════════════════════
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.addEventListener('click', () => {
+  const isDark = document.body.dataset.theme === 'dark';
+  document.body.dataset.theme = isDark ? 'light' : 'dark';
+  themeToggle.textContent = isDark ? '🌙' : '☀️';
+});
+
+// ══════════════════════════════
+// EDIT MODE
+// ══════════════════════════════
+let editMode = false;
+const editBtn = document.getElementById('editModeBtn');
+editBtn.addEventListener('click', () => {
+  editMode = !editMode;
+  document.querySelectorAll('[contenteditable]').forEach(el => {
+    el.contentEditable = editMode ? 'true' : 'false';
+  });
+  editBtn.textContent = editMode ? '✅ Listo' : '✏️ Editar';
+  editBtn.classList.toggle('active', editMode);
+});
+
+// ══════════════════════════════
+// COLOR PICKER
+// ══════════════════════════════
+const colorSwatch = document.getElementById('colorSwatch');
+const colorPalette = document.getElementById('colorPalette');
+let currentColor = getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#1a1410';
+colorSwatch.style.background = currentColor;
+
+colorSwatch.addEventListener('click', (e) => {
+  e.stopPropagation();
+  colorPalette.classList.toggle('open');
+});
+document.addEventListener('click', () => colorPalette.classList.remove('open'));
+
+document.querySelectorAll('.color-dot').forEach(dot => {
+  dot.addEventListener('click', (e) => {
+    e.stopPropagation();
+    currentColor = dot.dataset.color;
+    colorSwatch.style.background = currentColor;
+    document.getElementById('sermonContent').style.color = currentColor;
+    colorPalette.classList.remove('open');
+  });
+});
+
+// ══════════════════════════════
+// TEXT-TO-SPEECH
+// ══════════════════════════════
+const ttsNodes = () => Array.from(document.querySelectorAll('.tts-node'));
+let ttsIndex = 0;
+let ttsSpeaking = false;
+let utterance = null;
+
+function ttsSpeak(idx) {
+  if (!window.speechSynthesis) return;
+  const nodes = ttsNodes();
+  if (idx >= nodes.length) { ttsSpeaking = false; updatePlayBtn(); return; }
+  ttsIndex = idx;
+
+  // Remove previous highlight
+  nodes.forEach(n => n.classList.remove('tts-active'));
+  nodes[idx].classList.add('tts-active');
+  nodes[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  const text = nodes[idx].textContent.trim();
+  utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'es-ES';
+  utterance.rate = parseFloat(document.getElementById('ttsSpeed').value);
+
+  // Try to find a Spanish voice
+  const voices = window.speechSynthesis.getVoices();
+  const esVoice = voices.find(v => v.lang.startsWith('es'));
+  if (esVoice) utterance.voice = esVoice;
+
+  utterance.onend = () => {
+    nodes[idx].classList.remove('tts-active');
+    if (ttsSpeaking) ttsSpeak(idx + 1);
+  };
+  utterance.onerror = () => { ttsSpeaking = false; updatePlayBtn(); };
+  window.speechSynthesis.speak(utterance);
+}
+
+function updatePlayBtn() {
+  document.getElementById('ttsPlay').textContent = ttsSpeaking ? '⏸' : '▶';
+}
+
+document.getElementById('ttsPlay').addEventListener('click', () => {
+  if (!window.speechSynthesis) { alert('Tu navegador no soporta texto a voz.'); return; }
+  if (ttsSpeaking) {
+    window.speechSynthesis.cancel();
+    ttsNodes().forEach(n => n.classList.remove('tts-active'));
+    ttsSpeaking = false;
+  } else {
+    ttsSpeaking = true;
+    ttsSpeak(ttsIndex);
+  }
+  updatePlayBtn();
+});
+
+document.getElementById('ttsRewind').addEventListener('click', () => {
+  window.speechSynthesis.cancel();
+  ttsNodes().forEach(n => n.classList.remove('tts-active'));
+  ttsIndex = Math.max(0, ttsIndex - 1);
+  if (ttsSpeaking) ttsSpeak(ttsIndex);
+});
+
+document.getElementById('ttsStop').addEventListener('click', () => {
+  window.speechSynthesis.cancel();
+  ttsNodes().forEach(n => n.classList.remove('tts-active'));
+  ttsSpeaking = false; ttsIndex = 0;
+  updatePlayBtn();
+});
+
+document.getElementById('ttsSpeed').addEventListener('change', () => {
+  if (ttsSpeaking) {
+    window.speechSynthesis.cancel();
+    ttsSpeak(ttsIndex);
+  }
+});
+
+// Load voices async
+window.speechSynthesis && window.speechSynthesis.addEventListener &&
+  window.speechSynthesis.addEventListener('voiceschanged', () => {});
+
+// ══════════════════════════════
+// CHRONOMETER
+// ══════════════════════════════
+let chronoRunning = false, chronoSeconds = 0, chronoInterval = null;
+const chronoDisplay = document.getElementById('chronoDisplay');
+const chronoToggle = document.getElementById('chronoToggle');
+
+function formatTime(s) {
+  const m = Math.floor(s / 60), sec = s % 60;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+chronoToggle.addEventListener('click', () => {
+  chronoRunning = !chronoRunning;
+  if (chronoRunning) {
+    chronoInterval = setInterval(() => {
+      chronoSeconds++; chronoDisplay.textContent = formatTime(chronoSeconds);
+    }, 1000);
+    chronoToggle.textContent = '⏸';
+  } else {
+    clearInterval(chronoInterval);
+    chronoToggle.textContent = '▶';
+  }
+});
+document.getElementById('chronoReset').addEventListener('click', () => {
+  clearInterval(chronoInterval);
+  chronoRunning = false; chronoSeconds = 0;
+  chronoDisplay.textContent = '00:00';
+  chronoToggle.textContent = '▶';
+});
+
+// ══════════════════════════════
+// SAVE AS HTML
+// ══════════════════════════════
+document.getElementById('saveBtn').addEventListener('click', () => {
+  // Snapshot current content including any edits
+  const clone = document.documentElement.cloneNode(true);
+  // Remove interactive scripts except content
+  const scripts = clone.querySelectorAll('script');
+  // Keep the page as-is (self-contained)
+  const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'libreta-no-tienes-que-saberlo-todo.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+</script>
+</body>
+</html>
