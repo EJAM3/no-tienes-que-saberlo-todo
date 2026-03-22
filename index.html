@@ -460,6 +460,12 @@ body {
       </div>
     </div>
     <div class="tool-group">
+      <span style="font-size:.78rem;color:var(--text2);">Tamaño:</span>
+      <button class="btn btn-icon" id="fontDecrease" title="Reducir texto" style="font-size:1rem;font-weight:700">A−</button>
+      <span class="btn" id="fontSizeDisplay" style="min-width:42px;text-align:center;cursor:default;font-family:var(--font-mono);font-size:.8rem">18px</span>
+      <button class="btn btn-icon" id="fontIncrease" title="Agrandar texto" style="font-size:1rem;font-weight:700">A+</button>
+    </div>
+    <div class="tool-group">
       <button class="btn" id="editModeBtn">✏️ Editar</button>
     </div>
   </div>
@@ -945,6 +951,24 @@ document.getElementById('ttsSpeed').addEventListener('change', () => {
     window.speechSynthesis.cancel();
     ttsSpeak(ttsIndex);
   }
+});
+
+// ══════════════════════════════
+// FONT SIZE
+// ══════════════════════════════
+let fontSize = 18;
+const fontSizeDisplay = document.getElementById('fontSizeDisplay');
+const sermonContent = document.getElementById('sermonContent');
+
+function applyFontSize() {
+  sermonContent.style.fontSize = fontSize + 'px';
+  fontSizeDisplay.textContent = fontSize + 'px';
+}
+document.getElementById('fontIncrease').addEventListener('click', () => {
+  if (fontSize < 36) { fontSize += 2; applyFontSize(); }
+});
+document.getElementById('fontDecrease').addEventListener('click', () => {
+  if (fontSize > 12) { fontSize -= 2; applyFontSize(); }
 });
 
 // Load voices async
