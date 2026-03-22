@@ -462,7 +462,7 @@ body {
     <div class="tool-group">
       <span style="font-size:.78rem;color:var(--text2);">Tamaño:</span>
       <button class="btn btn-icon" id="fontDecrease" title="Reducir texto" style="font-size:1rem;font-weight:700">A−</button>
-      <span class="btn" id="fontSizeDisplay" style="min-width:42px;text-align:center;cursor:default;font-family:var(--font-mono);font-size:.8rem">18px</span>
+      <span class="btn" id="fontSizeDisplay" style="min-width:42px;text-align:center;cursor:default;font-family:var(--font-mono);font-size:.8rem">20px</span>
       <button class="btn btn-icon" id="fontIncrease" title="Agrandar texto" style="font-size:1rem;font-weight:700">A+</button>
     </div>
     <div class="tool-group">
@@ -956,19 +956,30 @@ document.getElementById('ttsSpeed').addEventListener('change', () => {
 // ══════════════════════════════
 // FONT SIZE
 // ══════════════════════════════
-let fontSize = 18;
+let fontSize = 20;
 const fontSizeDisplay = document.getElementById('fontSizeDisplay');
 const sermonContent = document.getElementById('sermonContent');
 
 function applyFontSize() {
-  sermonContent.style.fontSize = fontSize + 'px';
+  // Apply to every text-bearing element inside the sermon
+  sermonContent.querySelectorAll(
+    '.intro-text, .bullet-text, .scripture-quote, .cross-ref-text, ' +
+    '.section-header, .main-verse-block, .sermon-title, .sermon-text-ref, ' +
+    '.buena-noticia-verse, .buena-noticia-ref, .conclusion-line, ' +
+    '.conclusion-final, .intro-label, .scripture-ref-badge, ' +
+    '.cross-ref-badge, .conclusion-label'
+  ).forEach(el => { el.style.fontSize = fontSize + 'px'; });
   fontSizeDisplay.textContent = fontSize + 'px';
 }
+
+// Set initial size on load
+applyFontSize();
+
 document.getElementById('fontIncrease').addEventListener('click', () => {
-  if (fontSize < 36) { fontSize += 2; applyFontSize(); }
+  if (fontSize < 42) { fontSize += 2; applyFontSize(); }
 });
 document.getElementById('fontDecrease').addEventListener('click', () => {
-  if (fontSize > 12) { fontSize -= 2; applyFontSize(); }
+  if (fontSize > 20) { fontSize -= 2; applyFontSize(); }
 });
 
 // Load voices async
